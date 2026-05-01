@@ -3,9 +3,11 @@ package com.minimarket.compra_service.config;
 import com.minimarket.compra_service.model.Compra;
 import com.minimarket.compra_service.model.DetalleCompra;
 import com.minimarket.compra_service.model.EstadoCompra;
-import com.minimarket.compra_service.repository.CompraRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.minimarket.compra_service.repository.CompraRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
