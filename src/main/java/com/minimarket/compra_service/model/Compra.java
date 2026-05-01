@@ -2,21 +2,18 @@ package com.minimarket.compra_service.model;
 
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.time.LocalDateTime;
-import java.util.List;
-
-
-@Entity
-@Table(name = "compra")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "compra")
 public class Compra {
 
     @Id
@@ -31,16 +28,14 @@ public class Compra {
     private LocalDateTime fechaCompra;
 
     @Column(nullable = false)
-    private  Double total;
+    private Double total;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoCompra estado;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL)
-    private List<DetalleCompra> detalles;
+    private List<DetalleCompra> detalles = new ArrayList<>();
 
-    private boolean activo=true;
-
-
+    private boolean activo = true;
 }

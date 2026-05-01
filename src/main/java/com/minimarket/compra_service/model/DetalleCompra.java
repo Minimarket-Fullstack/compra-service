@@ -5,11 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "detalle_compra")
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "detalle_compra")
 public class DetalleCompra {
 
     @Id
@@ -17,6 +18,8 @@ public class DetalleCompra {
     private Long id;
 
     @Column(name = "compra_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name="compra_id",nullable = false)
     private Compra compra;
 
     @Column(nullable = false)
