@@ -42,7 +42,6 @@ public class Compra {
     public void calcularTotal(){
         if(this.detalles == null || this.detalles.isEmpty()){
             this.total=0.0;
-
         } else{
             this.total = this.detalles.stream().mapToDouble(DetalleCompra::getSubtotal).sum();
         }
