@@ -79,9 +79,6 @@
 ## DELETE - Eliminar compra (borrado lógico)
 `DELETE http://localhost:8083/api/v1/compras/3`
 
-> El registro no se elimina físicamente de la BD, solo cambia `activo = 0`.
-> Verificar en phpMyAdmin que el campo `activo` cambió a `0`.
-
 ---
 
 > Nota
