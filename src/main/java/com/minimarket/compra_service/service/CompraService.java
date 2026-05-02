@@ -1,6 +1,7 @@
 package com.minimarket.compra_service.service;
 
 
+import com.minimarket.compra_service.dto.CompraRequestDTO;
 import com.minimarket.compra_service.dto.CompraResponseDTO;
 import com.minimarket.compra_service.dto.DetalleCompraResponseDTO;
 import com.minimarket.compra_service.model.Compra;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -16,24 +18,6 @@ import java.util.stream.Collectors;
 public class CompraService {
 
     private final CompraRepository compraRepository;
-
-    //detallecompraresponsedto
-    //    private Long id;
-    //    private Long productoId;
-    //    private String nombreProducto;
-    //    private Integer cantidad;
-    //    private Double precioUnitario;
-    //    private Double subtotal;
-
-
-    //Compra
-    //    private Long id;
-    //    private Long proveedorId;
-    //    private LocalDateTime fechaCompra;
-    //    private Double total;
-    //    private String estado;
-    //    private List<DetalleCompraResponseDTO> detalles;
-
 
     public CompraResponseDTO mapToDto(Compra compra){
         List< DetalleCompraResponseDTO> detalles = compra.getDetalles().stream().
@@ -50,7 +34,19 @@ public class CompraService {
                 compra.getEstado().name(),
                 detalles
         );
+    }
+
+    public List<CompraResponseDTO> obtenerTodos(){
+        return compraRepository.findByActivoTrue().stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    public Optional<CompraResponseDTO> obtenerPorId(Long id){
+        return compraRepository.findByIdAndActivoTrue(id).map(this::mapToDto);
+    }
+
+    public CompraResponseDTO guardar(CompraRequestDTO dto){
 
     }
+
 
 }
