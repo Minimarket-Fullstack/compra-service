@@ -22,6 +22,4 @@ public class CompraRequestDTO {
 
     @NotNull(message = "LOS DETALLES SON OBLIGATORIOS")
     private List<DetalleCompraRequestDTO> detalles;
-
-
 }

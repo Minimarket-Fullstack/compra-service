@@ -8,6 +8,8 @@ import com.minimarket.compra_service.model.Compra;
 import com.minimarket.compra_service.model.DetalleCompra;
 import com.minimarket.compra_service.model.EstadoCompra;
 import com.minimarket.compra_service.repository.CompraRepository;
+import com.minimarket.compra_service.webclient.ProveedorClient;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +18,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class CompraService {
 
     private final CompraRepository compraRepository;
+    private final ProveedorClient proveedorClient;
 
     public CompraResponseDTO mapToDto(Compra compra){
         List< DetalleCompraResponseDTO> detalles = compra.getDetalles().stream().
@@ -61,10 +63,11 @@ public class CompraService {
     }
 
     public CompraResponseDTO guardar (CompraRequestDTO dto){
+
+        proveedorClient.obtenerProveedorId(dto.getProveedorId());
+
         Compra compra = new Compra(null, dto.getProveedorId(), LocalDateTime.now(), 0.0, EstadoCompra.PENDIENTE, null, true);
-
         List<DetalleCompra> detalles = dto.getDetalles().stream().map( d -> mapToDetalle(d,compra)).toList();
-
         compra.setDetalles(detalles);
         compra.calcularTotal();
         return mapToDto(compraRepository.save(compra));
@@ -78,7 +81,6 @@ public class CompraService {
                     return mapToDto(compraRepository.save(existente));
                 });
     }
-
 
     public void eliminarCompra(Long id) {
         Compra compra = compraRepository.findById(id).orElseThrow(() -> new RuntimeException("Compra no encontrada con: " + id));

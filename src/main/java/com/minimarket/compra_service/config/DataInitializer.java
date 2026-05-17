@@ -81,7 +81,6 @@ public class DataInitializer implements CommandLineRunner {
         compraRepository.save(c7);
 
         //LocalDateTime.now().minusDays(12);
-
         log.info(
             ">>> DataInitializer: {} compras insertadas.",
             compraRepository.count()

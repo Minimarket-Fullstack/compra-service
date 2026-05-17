@@ -1,6 +1,5 @@
 package com.minimarket.compra_service.model;
 
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class Compra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false) // unirlo con el proveedor
     private Long proveedorId;
 
     //fecha + hora_hora,minutos,segundos
@@ -40,10 +39,10 @@ public class Compra {
     private boolean activo = true;
 
     public void calcularTotal(){
-        if(this.detalles == null || this.detalles.isEmpty()){
-            this.total=0.0;
+        if(detalles == null || detalles.isEmpty()){
+            total=0.0;
         } else{
-            this.total = this.detalles.stream().mapToDouble(DetalleCompra::getSubtotal).sum();
+            total = detalles.stream().mapToDouble(DetalleCompra::getSubtotal).sum();
         }
     }
 }

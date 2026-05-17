@@ -15,5 +15,4 @@ public class DetalleCompraResponseDTO {
     private Integer cantidad;
     private Double precioUnitario;
     private Double subtotal;
-
 }
