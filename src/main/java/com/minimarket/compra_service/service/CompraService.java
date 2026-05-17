@@ -1,14 +1,18 @@
 package com.minimarket.compra_service.service;
 
+import com.minimarket.compra_service.client.ProveedorClient;
 import com.minimarket.compra_service.dto.CompraRequestDTO;
 import com.minimarket.compra_service.dto.CompraResponseDTO;
 import com.minimarket.compra_service.dto.DetalleCompraRequestDTO;
 import com.minimarket.compra_service.dto.DetalleCompraResponseDTO;
+import com.minimarket.compra_service.exception.ProveedorNotFoundException;
 import com.minimarket.compra_service.model.Compra;
 import com.minimarket.compra_service.model.DetalleCompra;
 import com.minimarket.compra_service.model.EstadoCompra;
 import com.minimarket.compra_service.repository.CompraRepository;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,9 +23,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CompraService {
 
     private final CompraRepository compraRepository;
+
+    private final ProveedorClient proveedorClient;
 
     public CompraResponseDTO mapToDto(Compra compra){
         List< DetalleCompraResponseDTO> detalles = compra.getDetalles().stream().
@@ -38,6 +45,18 @@ public class CompraService {
                 compra.getEstado().name(),
                 detalles
         );
+    }
+
+    private void valdiarProveedor(Long proveedorId){
+        try{
+            proveedorClient.obtenerPorId(proveedorId);
+            log.info("ESPECIALIDAD {} VALIDADA CORRECTAMENTE (FEIGN CLIENT)", proveedorId);
+
+        }catch( FeignException.NotFound e){
+            throw new RuntimeException("EL PROVEEDOR CON EL ID " + proveedorId + " NO EXISTE EN PROVEEDOR-SERVICE");
+        } catch (FeignException e){
+            throw new ProveedorNotFoundException(proveedorId);
+        }
     }
 
     //detalles
@@ -60,6 +79,9 @@ public class CompraService {
     }
 
     public CompraResponseDTO guardar (CompraRequestDTO dto){
+
+        valdiarProveedor(dto.getProveedorId());
+
         Compra compra = new Compra(null, dto.getProveedorId(), LocalDateTime.now(), 0.0, EstadoCompra.PENDIENTE, null, true);
 
         List<DetalleCompra> detalles = dto.getDetalles().stream().map( d -> mapToDetalle(d,compra)).toList();

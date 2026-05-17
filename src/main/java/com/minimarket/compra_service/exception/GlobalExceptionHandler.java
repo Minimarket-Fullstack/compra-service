@@ -30,6 +30,12 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(ProveedorNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleProveedorNotFound(ProveedorNotFoundException ex){
+        log.warn(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR" , ex.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneric(Exception ex){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error interno en el servidor"));
