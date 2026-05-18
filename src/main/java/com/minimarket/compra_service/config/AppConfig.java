@@ -11,7 +11,6 @@ public class AppConfig {
     @Value("${proveedor-service.url}")
     public String proveedorUrl;
 
-
     @Bean
     public WebClient webClient(){
         return WebClient.builder().baseUrl(proveedorUrl).build();
