@@ -1,17 +1,20 @@
 package com.minimarket.compra_service.controller;
 
-
 import com.minimarket.compra_service.dto.CompraRequestDTO;
 import com.minimarket.compra_service.dto.CompraResponseDTO;
+import com.minimarket.compra_service.exception.CompraNotFoundException;
 import com.minimarket.compra_service.model.EstadoCompra;
 import com.minimarket.compra_service.service.CompraService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("api/v1/compras")
 @RequiredArgsConstructor
@@ -26,12 +29,17 @@ public class CompraController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CompraResponseDTO> obtenerPorId(@PathVariable Long id){
-        return compraService.obtenerPorId(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        log.info("BUSCANDO COMPRA CON ID: {}", id);
+        return compraService.obtenerPorId(id).map(ResponseEntity::ok).orElseThrow(() -> new CompraNotFoundException(id));
     }
 
     @GetMapping("/proveedor/{proveedorId}")
     public ResponseEntity<List<CompraResponseDTO>> obtenerPorProveedor(@PathVariable Long proveedorId){
-        return ResponseEntity.ok(compraService.obtenerPorProveedor(proveedorId));
+        List<CompraResponseDTO> compras = compraService.obtenerPorProveedor(proveedorId);
+        if(!compras.isEmpty()){
+            return ResponseEntity.ok(compras);
+        }
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
@@ -47,9 +55,9 @@ public class CompraController {
 
     // eliminar
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+    public ResponseEntity<?> eliminar(@PathVariable Long id){
         compraService.eliminarCompra(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("MENSAJE", "COMPRA ELIMINADA CORRECTAMENTE"));
     }
 
 }

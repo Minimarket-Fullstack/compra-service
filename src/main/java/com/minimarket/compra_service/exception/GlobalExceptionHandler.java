@@ -30,16 +30,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errores);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String,String>> handleRuntime(RuntimeException exception){
-        log.warn("ERROR: {}" ,exception.getMessage());
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR",exception.getMessage()));
+    @ExceptionHandler(CompraNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleCompraNotFound(CompraNotFoundException exception){
+        log.warn(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR", exception.getMessage()));
     }
 
     @ExceptionHandler(ProveedorNotFoundException.class)
     public ResponseEntity<Map<String,String>> handleProveedorNotFound(ProveedorNotFoundException ex){
         log.warn(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR" , ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProductoNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleProductoNotFound(ProductoNotFoundException exception){
+        log.warn(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR", exception.getMessage()));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String,String>> handleRuntime(RuntimeException exception){
+        log.warn("ERROR: {}" ,exception.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR",exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

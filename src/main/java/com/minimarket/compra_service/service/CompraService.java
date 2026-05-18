@@ -6,6 +6,7 @@ import com.minimarket.compra_service.dto.CompraRequestDTO;
 import com.minimarket.compra_service.dto.CompraResponseDTO;
 import com.minimarket.compra_service.dto.DetalleCompraRequestDTO;
 import com.minimarket.compra_service.dto.DetalleCompraResponseDTO;
+import com.minimarket.compra_service.exception.ProductoNotFoundException;
 import com.minimarket.compra_service.exception.ProveedorNotFoundException;
 
 import com.minimarket.compra_service.model.Compra;
@@ -59,7 +60,7 @@ public class CompraService {
             productoClient.obtenerPorId(productoId);
             log.info("EL PRODUCTO CON EL ID {} HA SIDO VALIDADO CORRECTAMENTE (FEIGN)", productoId);
         } catch (FeignException.NotFound e) {
-            throw new ProveedorNotFoundException(productoId);
+            throw new ProductoNotFoundException(productoId);
         } catch (Exception e) {
             throw new RuntimeException("NO SE PUDO CONECTAR CON EL PRODUCTO-SERVICE: " + e.getMessage());
         }
