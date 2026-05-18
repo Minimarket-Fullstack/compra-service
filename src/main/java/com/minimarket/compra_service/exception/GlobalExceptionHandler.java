@@ -36,6 +36,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR",exception.getMessage()));
     }
 
+    @ExceptionHandler(ProveedorNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleProveedorNotFound(ProveedorNotFoundException ex){
+        log.warn(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR" , ex.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneric(Exception ex){
         log.error("ERROR INESPERADO", ex);
