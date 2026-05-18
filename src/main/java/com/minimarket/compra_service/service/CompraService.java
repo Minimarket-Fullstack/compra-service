@@ -78,7 +78,6 @@ public class CompraService {
                 });
     }
 
-
     public void eliminarCompra(Long id) {
         Compra compra = compraRepository.findById(id).orElseThrow(() -> new RuntimeException("Compra no encontrada con: " + id));
         compra.setActivo(false);

@@ -38,11 +38,14 @@ public class Compra {
 
     private boolean activo = true;
 
-    public void calcularTotal(){
-        if(detalles == null || detalles.isEmpty()){
-            total=0.0;
-        } else{
-            total = detalles.stream().mapToDouble(DetalleCompra::getSubtotal).sum();
+    public void calcularTotal() {
+        if (detalles == null || detalles.isEmpty()) {
+            total = 0.0;
+        } else {
+            total = detalles
+                .stream()
+                .mapToDouble(DetalleCompra::getSubtotal)
+                .sum();
         }
     }
 }
