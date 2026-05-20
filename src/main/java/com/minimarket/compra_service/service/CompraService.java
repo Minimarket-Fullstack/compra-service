@@ -6,9 +6,9 @@ import com.minimarket.compra_service.dto.CompraRequestDTO;
 import com.minimarket.compra_service.dto.CompraResponseDTO;
 import com.minimarket.compra_service.dto.DetalleCompraRequestDTO;
 import com.minimarket.compra_service.dto.DetalleCompraResponseDTO;
+import com.minimarket.compra_service.exception.CompraNotFoundException;
 import com.minimarket.compra_service.exception.ProductoNotFoundException;
 import com.minimarket.compra_service.exception.ProveedorNotFoundException;
-
 import com.minimarket.compra_service.model.Compra;
 import com.minimarket.compra_service.model.DetalleCompra;
 import com.minimarket.compra_service.model.EstadoCompra;
@@ -34,7 +34,7 @@ public class CompraService {
     private final ProveedorClient proveedorClient;
     private final ProductoClient productoClient;
 
-    public CompraResponseDTO mapToDto(Compra compra) {
+    private CompraResponseDTO mapToDto(Compra compra) {
         List<DetalleCompraResponseDTO> detalles = compra.getDetalles().stream()
                 .map(i -> new DetalleCompraResponseDTO(
                         i.getId(),
@@ -66,7 +66,7 @@ public class CompraService {
         }
     }
 
-    public void validarProveedorId(Long proveedorId) {
+    private void validarProveedorId(Long proveedorId) {
         try {
             proveedorClient.obtenerPorId(proveedorId);
             log.info("EL PROVEEDOR CON EL ID {} HA SIDO VALIDADO CORRECTAMENTE (FEIGN)", proveedorId);
@@ -77,8 +77,7 @@ public class CompraService {
         }
     }
 
-    public DetalleCompra mapToDetalle(DetalleCompraRequestDTO dto, Compra compra) {
-
+    private DetalleCompra mapToDetalle(DetalleCompraRequestDTO dto, Compra compra) {
         validarProductoId(dto.getProductoId());
         double subtotal = dto.getCantidad() * dto.getPrecioUnitario();
         return new DetalleCompra(null, compra, dto.getProductoId(), dto.getNombreProducto(),
@@ -86,6 +85,7 @@ public class CompraService {
     }
 
     public List<CompraResponseDTO> obtenerTodos() {
+        log.info("LISTANDO TODAS LAS COMPRAS ACTIVAS");
         return compraRepository.findByActivoTrue().stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
@@ -102,8 +102,11 @@ public class CompraService {
     }
 
     public CompraResponseDTO guardar(CompraRequestDTO dto) {
+
+
         validarProveedorId(dto.getProveedorId());
 
+        log.info("GUARDANDO COMPRA para proveedorId={}", dto.getProveedorId());
         Compra compra = new Compra(null, dto.getProveedorId(), LocalDateTime.now(),
                 0.0, EstadoCompra.PENDIENTE, null, true);
         List<DetalleCompra> detalles = dto.getDetalles().stream()
@@ -122,9 +125,11 @@ public class CompraService {
     }
 
     public void eliminarCompra(Long id) {
-        Compra compra = compraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Compra no encontrada con id: " + id));
+        Compra compra = compraRepository.findByIdAndActivoTrue(id)
+                .orElseThrow(() -> new CompraNotFoundException(id));
+        log.info("ELIMINANDO COMPRA CON ID: {}", id);
         compra.setActivo(false);
         compraRepository.save(compra);
+        log.info("COMPRA CON ID {} ELIMINADA EXITOSAMENTE", id);
     }
 }

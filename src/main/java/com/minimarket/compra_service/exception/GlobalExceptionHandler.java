@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String,String>> handleRuntime(RuntimeException exception){
         log.warn("ERROR: {}" ,exception.getMessage());
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("ERROR",exception.getMessage()));
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("ERROR",exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
