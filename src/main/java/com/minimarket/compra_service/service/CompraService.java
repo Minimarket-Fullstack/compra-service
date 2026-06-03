@@ -2,10 +2,7 @@ package com.minimarket.compra_service.service;
 
 import com.minimarket.compra_service.client.ProductoClient;
 import com.minimarket.compra_service.client.ProveedorClient;
-import com.minimarket.compra_service.dto.CompraRequestDTO;
-import com.minimarket.compra_service.dto.CompraResponseDTO;
-import com.minimarket.compra_service.dto.DetalleCompraRequestDTO;
-import com.minimarket.compra_service.dto.DetalleCompraResponseDTO;
+import com.minimarket.compra_service.dto.*;
 import com.minimarket.compra_service.exception.CompraNotFoundException;
 import com.minimarket.compra_service.exception.ProductoNotFoundException;
 import com.minimarket.compra_service.exception.ProveedorNotFoundException;
@@ -45,9 +42,13 @@ public class CompraService {
                         i.getSubtotal()))
                 .collect(Collectors.toList());
 
+
+        ProveedorResponseDTO proveedor = null;
+        proveedor = proveedorClient.obtenerPorId(compra.getProveedorId());
+
         return new CompraResponseDTO(
                 compra.getId(),
-                compra.getProveedorId(),
+                proveedor,
                 compra.getFechaCompra(),
                 compra.getTotal(),
                 compra.getEstado().name(),
@@ -66,10 +67,11 @@ public class CompraService {
         }
     }
 
-    private void validarProveedorId(Long proveedorId) {
+    private ProveedorResponseDTO validarProveedorId(Long proveedorId) {
         try {
-            proveedorClient.obtenerPorId(proveedorId);
+            ProveedorResponseDTO proveedor = proveedorClient.obtenerPorId(proveedorId);
             log.info("EL PROVEEDOR CON EL ID {} HA SIDO VALIDADO CORRECTAMENTE (FEIGN)", proveedorId);
+            return proveedor;
         } catch (FeignException.NotFound e) {
             throw new ProveedorNotFoundException(proveedorId);
         } catch (Exception e) {
@@ -96,6 +98,7 @@ public class CompraService {
     }
 
     public List<CompraResponseDTO> obtenerPorProveedor(Long proveedorId) {
+        validarProveedorId(proveedorId);
         return compraRepository.findByProveedorIdAndActivoTrue(proveedorId).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
