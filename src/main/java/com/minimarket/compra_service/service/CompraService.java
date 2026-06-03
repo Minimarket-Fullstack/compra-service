@@ -32,17 +32,23 @@ public class CompraService {
     private final ProductoClient productoClient;
 
     private CompraResponseDTO mapToDto(Compra compra) {
+
+     //esto tambien va en un try catch
         List<DetalleCompraResponseDTO> detalles = compra.getDetalles().stream()
-                .map(i -> new DetalleCompraResponseDTO(
-                        i.getId(),
-                        i.getProductoId(),
-                        i.getNombreProducto(),
-                        i.getCantidad(),
-                        i.getPrecioUnitario(),
-                        i.getSubtotal()))
+                .map(i -> {
+                    ProductoResponseDTO producto = productoClient.obtenerPorId(i.getProductoId());
+
+                    return new DetalleCompraResponseDTO(
+                            i.getId(),
+                            producto,
+                            i.getNombreProducto(),
+                            i.getCantidad(),
+                            i.getPrecioUnitario(),
+                            i.getSubtotal());
+                })
                 .collect(Collectors.toList());
 
-
+        //trycatch
         ProveedorResponseDTO proveedor = null;
         proveedor = proveedorClient.obtenerPorId(compra.getProveedorId());
 

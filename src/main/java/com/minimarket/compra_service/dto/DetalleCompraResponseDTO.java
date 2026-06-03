@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class DetalleCompraResponseDTO {
 
     private Long id;
-    private Long productoId;
+    private ProductoResponseDTO producto;
     private String nombreProducto;
     private Integer cantidad;
     private Double precioUnitario;
